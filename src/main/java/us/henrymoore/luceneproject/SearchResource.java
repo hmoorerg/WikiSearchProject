@@ -12,7 +12,7 @@ import java.util.List;
 
 @Slf4j
 @Path("/hello")
-public class GreetingResource {
+public class SearchResource {
 
     @Inject LuceneManager luceneManager;
 
@@ -23,26 +23,14 @@ public class GreetingResource {
         return "Hello RESTEasy (using the new library)";
     }
 
-    @Path("people")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Person> getPeople(){
-        luceneManager.getTopResults();
-        return new ArrayList<Person>(){{
-            add(Person.builder()
-                    .name("Guy")
-                    .build());
-        }};
-    }
-
-    @Path("Debug")
+    @Path("TopPages")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<WikipediaPage> getTopPages(){
         return luceneManager.getTopResults(10);
     }
 
-    @Path("Debug")
+    @Path("TopGeoPages")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<WikipediaPage> getTopGeoPages(){
