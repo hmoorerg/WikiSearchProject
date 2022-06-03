@@ -29,9 +29,29 @@ public class LuceneManager {
         String a = "";
         var collection = mongoClient.getDatabase("Wikipedia").getCollection("Articles");
         var pages = collection.find(WikipediaPage.class);
+
+        Analyzer analyzer = new StandardAnalyzer();//initialize analyzer
+        Path indexPath = Files.createTempDirectory("tempIndex");//get path to index
+        Directory directory = FSDirectory.open(indexPath);//
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        IndexWriter iwriter = new IndexWriter(directory,config);
         for (var page : pages) {
             log.info("Inserting " + page.title + " page into Lucene");
+            
+            Document doc = new Document();
+            doc.add(new Field("Title", page.title, TextField.TYPE_STORED));
+            doc.add(new Field("Url", page.url, TextField.TYPE_STORED));
+            doc.add(new Field("Last Modified", page.lastModifiedDate, TextField.TYPE_STORED));
+            doc.add(new Field("Coordinates", page.coordinates, TextField.TYPE_STORED));
+            doc.add(new Field("Number of References", page.numberOfReferences, TextField.TYPE_STORED));
+            doc.add(new Field("Subheaders", page.subHeaders, TextField.TYPE_STORED));
+            doc.add(new Field("Categories", page.categories, TextField.TYPE_STORED));
+            doc.add(new Field("Links", page.links, TextField.TYPE_STORED));
+            iwriter.addDocument(doc);
         }
+        iwriter.close();
+        //new test
+
 
     }
 
