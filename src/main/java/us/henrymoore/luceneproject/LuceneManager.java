@@ -84,7 +84,7 @@ public class LuceneManager {
         return pages;
     }
 
-    public List<WikipediaPage> getTopGeoResults(int i) {
+    public List<WikipediaPage> getTopGeoResults(int limit) {
         var collection = mongoClient.getDatabase("Wikipedia").getCollection("Articles");
         var pages = collection.find(ne("Coordinates", null), WikipediaPage.class).limit(limit).into(new ArrayList<WikipediaPage>());
 
