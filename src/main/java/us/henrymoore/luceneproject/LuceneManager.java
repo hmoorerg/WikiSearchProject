@@ -51,8 +51,6 @@ public class LuceneManager {
             IndexWriter iwriter = new IndexWriter(directory, config);
 
             for (var page : pages) {
-                log.info("Inserting " + page.title + " page into Lucene");
-
                 Document doc = new Document();
                 doc.add(new Field("Title", page.title, TextField.TYPE_STORED));
                 doc.add(new Field("Url", page.url, TextField.TYPE_STORED));
@@ -63,12 +61,14 @@ public class LuceneManager {
 //                doc.add(new Field("Categories", page.categories, TextField.TYPE_STORED));
 //                doc.add(new Field("Links", page.links, TextField.TYPE_STORED));
                 iwriter.addDocument(doc);
+                log.info("Inserted " + page.title + " page into Lucene");
             }
             iwriter.close();
             //new test
 
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("Error creating index");
         }
 
     }
