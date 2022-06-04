@@ -41,12 +41,9 @@ public class LuceneManager {
     @Inject
     MongoClient mongoClient;
 
-    @Inject
-    @ConfigProperty(name = "lucene.project.mongo.db_name", defaultValue = "Wikipedia")
-    String mongoDatabase;
 
+    // Lucene main variables
     private Directory _directory;
-
     private Analyzer analyzer = new StandardAnalyzer();//initialize analyzer
 
     @PostConstruct
@@ -74,7 +71,6 @@ public class LuceneManager {
                 // convert it to a Date type
                 Date lastModifiedDate = java.util.Date.from(modifiedDateTime.atZone(ZoneId.systemDefault()).toInstant());
                 String lastModifiedDateString =  DateTools.dateToString(lastModifiedDate, DateTools.Resolution.DAY);
-                log.info("Last modified date: "+lastModifiedDateString);
 
                 doc.add(new Field("Last Modified",lastModifiedDateString,TextField.TYPE_STORED));
                 if (page.coordinates != null)
@@ -93,10 +89,10 @@ public class LuceneManager {
                     doc.add(new Field("Links", link, TextField.TYPE_STORED));
                 }
                 iwriter.addDocument(doc);
-                 log.info("Inserted " + page.title + " page into Lucene");
             }
             iwriter.close();
             //new test
+            log.info("Finished inserting values into Lucene from MongoDB");
 
         } catch (IOException e) {
             e.printStackTrace();
