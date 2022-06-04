@@ -12,10 +12,16 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.*;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
@@ -39,6 +45,10 @@ public class LuceneManager {
     @ConfigProperty(name = "lucene.project.mongo.db_name", defaultValue = "Wikipedia")
     String mongoDatabase;
 
+    private Directory _directory;
+
+    private Analyzer analyzer = new StandardAnalyzer();//initialize analyzer
+
     @PostConstruct
     void Initialize() {
          log.info("Inserting records from MongoDB");
@@ -47,11 +57,11 @@ public class LuceneManager {
         var pages = collection.find(WikipediaPage.class);
 
         try {
-            Analyzer analyzer = new StandardAnalyzer();//initialize analyzer
+
             Path indexPath = Files.createTempDirectory("tempIndex");//get path to index
-            Directory directory = FSDirectory.open(indexPath);//
+            _directory = FSDirectory.open(indexPath);//
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
-            IndexWriter iwriter = new IndexWriter(directory, config);
+            IndexWriter iwriter = new IndexWriter(_directory, config);
 
             for (var page : pages) {
                 Document doc = new Document();
@@ -63,8 +73,10 @@ public class LuceneManager {
                 var modifiedDateTime = page.lastModifiedDate;
                 // convert it to a Date type
                 Date lastModifiedDate = java.util.Date.from(modifiedDateTime.atZone(ZoneId.systemDefault()).toInstant());
+                String lastModifiedDateString =  DateTools.dateToString(lastModifiedDate, DateTools.Resolution.DAY);
+                log.info("Last modified date: "+lastModifiedDateString);
 
-                doc.add(new Field("Last Modified", DateTools.dateToString(lastModifiedDate, DateTools.Resolution.DAY),TextField.TYPE_STORED));
+                doc.add(new Field("Last Modified",lastModifiedDateString,TextField.TYPE_STORED));
                 if (page.coordinates != null)
                 {
                     doc.add(new Field("Latitude", page.coordinates.latitude, TextField.TYPE_STORED));
@@ -93,20 +105,50 @@ public class LuceneManager {
 
     }
 
-    List<WikipediaPage> getTopResults() {
-        return getTopResults(100);
+    List<String> getTopResults(String query) {
+        return getTopResults(query,10);
     }
 
-    List<WikipediaPage> getTopResults(int limit) {
-        var collection = mongoClient.getDatabase("Wikipedia").getCollection("Articles");
-        var pages = collection.find(WikipediaPage.class).limit(limit).into(new ArrayList<WikipediaPage>());
+    List<String> getTopResults(String queryString, int limit) {
+        var pages = new ArrayList<String>();
+
+        // Adapt this to search more fields later
+        try {
+            QueryParser parser = new QueryParser("Title", analyzer);
+            Query query = parser.parse(queryString);
+
+            IndexReader indexReader = DirectoryReader.open(_directory);
+            IndexSearcher searcher = new IndexSearcher(indexReader);
+            TopDocs topDocs = searcher.search(query, limit);
+            for (var doc : topDocs.scoreDocs) {
+                Document document = searcher.doc(doc.doc);
+                pages.add("Doc: "+document.get("Title")+", Score: "+doc.score);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         return pages;
     }
 
-    public List<WikipediaPage> getTopGeoResults(int limit) {
-        var collection = mongoClient.getDatabase("Wikipedia").getCollection("Articles");
-        var pages = collection.find(ne("Coordinates", null), WikipediaPage.class).limit(limit).into(new ArrayList<WikipediaPage>());
+    public List<String> getTopGeoResults(String query) { return getTopGeoResults(query,10); }
+
+    public List<String> getTopGeoResults(String query, int limit) {
+        var pages = new ArrayList<String>();
+        pages.add("UNIMPLEMENTED");
+
+        // Adapt this to search more fields later
+//
+//        try {
+//            Query queryObj = new QueryParser("Title", analyzer).parse(query);
+//            IndexReader indexReader = DirectoryReader.open(_directory);
+//            IndexSearcher searcher = new IndexSearcher(indexReader);
+//            TopDocs topDocs = searcher.search(queryObj, limit);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
 
         return pages;
     }
