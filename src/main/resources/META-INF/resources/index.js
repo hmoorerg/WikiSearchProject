@@ -21,8 +21,11 @@ async function ShowResults(){
     
     results = await search(query);
 
+    console.log(results);
     // Add the results to the div
-    resultsDiv.innerHTML = results.join("<br>");
+    resultsDiv.innerHTML = results
+        .map((result) => `${result.page.title} - Score : ${result.score}`)
+        .join("<br>");
 
 };
 

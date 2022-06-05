@@ -6,7 +6,10 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Path("/search")
@@ -23,18 +26,19 @@ public class SearchResource {
     @Path("TopPages")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getTopPages(@QueryParam("query") String query, @QueryParam("count") @DefaultValue("10") int count){
+    public List<SearchResult> getTopPages(@QueryParam("query") String query, @QueryParam("count") @DefaultValue("10") int count){
         log.info("Got query : "+query);
-        return luceneManager.getTopResults(query, count);
-    }
 
-    // Disable until the LuceneManager part of this code is finished
-//    @Path("TopGeoPages")
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public List<String> getTopGeoPages(String query){
-//        log.info("Got query : "+query);
-//        return luceneManager.getTopGeoResults(query);
-//    }
+        Comparator<SearchResult> compareByScore = new Comparator<SearchResult>() {
+            @Override
+            public int compare(SearchResult o1, SearchResult o2) {
+                return Float.compare(o1.score,o2.score);
+            };
+        };
+
+        var output = luceneManager.getTopResults(query, count);
+        output.sort(compareByScore);
+        return output;
+    }
 
 }

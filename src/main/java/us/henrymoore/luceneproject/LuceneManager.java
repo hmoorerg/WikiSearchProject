@@ -4,7 +4,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -22,6 +25,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
@@ -29,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Date;
 
@@ -46,11 +51,15 @@ public class LuceneManager {
     private Directory _directory;
     private Analyzer analyzer = new StandardAnalyzer();//initialize analyzer
 
+    private MongoCollection<org.bson.Document> getCollection() {
+        return mongoClient.getDatabase("Wikipedia").getCollection("Articles");
+    }
+
     @PostConstruct
     void Initialize() {
          log.info("Inserting records from MongoDB");
         String a = "";
-        var collection = mongoClient.getDatabase("Wikipedia").getCollection("Articles");
+        var collection = getCollection();
         var pages = collection.find(WikipediaPage.class);
 
         try {
@@ -62,6 +71,7 @@ public class LuceneManager {
 
             for (var page : pages) {
                 Document doc = new Document();
+                doc.add(new Field("Id", page.Id.toString(), TextField.TYPE_STORED));
                 doc.add(new Field("Title", page.title, TextField.TYPE_STORED));
                 doc.add(new Field("Url", page.url, TextField.TYPE_STORED));
                 // Store the last modified date (created using these docs: https://lucene.apache.org/core/3_0_3/api/core/org/apache/lucene/document/NumericField.html)
@@ -101,12 +111,15 @@ public class LuceneManager {
 
     }
 
-    List<String> getTopResults(String query) {
+    List<SearchResult> getTopResults(String query) {
         return getTopResults(query,10);
     }
 
-    List<String> getTopResults(String queryString, int limit) {
-        var pages = new ArrayList<String>();
+    List<SearchResult> getTopResults(String queryString, int limit) {
+
+
+
+        var pages = new ArrayList<SearchResult>();
 
         // End early if the query string is empty
         if (queryString.isEmpty()) return pages;
@@ -121,7 +134,14 @@ public class LuceneManager {
             TopDocs topDocs = searcher.search(query, limit);
             for (var doc : topDocs.scoreDocs) {
                 Document document = searcher.doc(doc.doc);
-                pages.add("Doc: "+document.get("Title")+", Score: "+doc.score);
+
+                var collection = getCollection();
+                var wikiPage = collection.find(Filters.eq("_id", new ObjectId(document.get("Id"))), WikipediaPage.class).first();
+
+                var result = new SearchResult();
+                result.page = wikiPage;
+                result.score = doc.score;
+                pages.add(result);
             }
         } catch (Exception e) {
             e.printStackTrace();
