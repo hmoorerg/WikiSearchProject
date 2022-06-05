@@ -25,6 +25,8 @@ public class WikipediaPage {
     String title;
     @BsonProperty("Url")
     String url;
+    @BsonProperty("Body Text")
+    String bodyText;
     @BsonProperty("Last Modified")
     LocalDateTime lastModifiedDate;
     @BsonProperty("Coordinates")
