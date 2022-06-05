@@ -1,0 +1,18 @@
+body {
+  background: #222;
+  background-size: cover;
+  color: #FFF;
+  font-family: "arial";
+}
+h1 {
+    text-align: center;
+}
+
+#searchForm{
+    text-align:center;
+}
+#results{
+    text-align:center;
+}
+
+
