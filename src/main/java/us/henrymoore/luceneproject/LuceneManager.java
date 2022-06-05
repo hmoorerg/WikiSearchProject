@@ -1,43 +1,34 @@
 package us.henrymoore.luceneproject;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.*;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.*;
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.bson.types.ObjectId;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Date;
-
-import static com.mongodb.client.model.Filters.ne;
+import java.util.List;
 
 @Slf4j
 @ApplicationScoped
@@ -49,7 +40,7 @@ public class LuceneManager {
 
     // Lucene main variables
     private Directory _directory;
-    private Analyzer analyzer = new StandardAnalyzer();//initialize analyzer
+    private Analyzer analyzer = new EnglishAnalyzer();//initialize analyzer
 
     private MongoCollection<org.bson.Document> getCollection() {
         return mongoClient.getDatabase("Wikipedia").getCollection("Articles");
@@ -72,8 +63,8 @@ public class LuceneManager {
             for (var page : pages) {
                 Document doc = new Document();
                 doc.add(new Field("Id", page.Id.toString(), TextField.TYPE_STORED));
-                doc.add(new Field("Title", page.title, TextField.TYPE_STORED));
-                doc.add(new Field("Url", page.url, TextField.TYPE_STORED));
+                doc.add(new Field("Title", page.title, TextField.TYPE_NOT_STORED));
+                doc.add(new Field("Url", page.url, TextField.TYPE_NOT_STORED));
                 // Store the last modified date (created using these docs: https://lucene.apache.org/core/3_0_3/api/core/org/apache/lucene/document/NumericField.html)
 
                 //Convert the localDateTime to a simple date
@@ -82,21 +73,21 @@ public class LuceneManager {
                 Date lastModifiedDate = java.util.Date.from(modifiedDateTime.atZone(ZoneId.systemDefault()).toInstant());
                 String lastModifiedDateString =  DateTools.dateToString(lastModifiedDate, DateTools.Resolution.DAY);
 
-                doc.add(new Field("Last Modified",lastModifiedDateString,TextField.TYPE_STORED));
+                doc.add(new Field("Last Modified",lastModifiedDateString,TextField.TYPE_NOT_STORED));
                 if (page.coordinates != null)
                 {
-                    doc.add(new Field("Latitude", page.coordinates.latitude, TextField.TYPE_STORED));
-                    doc.add(new Field("Longitude", page.coordinates.longitude, TextField.TYPE_STORED));
+                    doc.add(new Field("Latitude", page.coordinates.latitude, TextField.TYPE_NOT_STORED));
+                    doc.add(new Field("Longitude", page.coordinates.longitude, TextField.TYPE_NOT_STORED));
                 }
                 doc.add(new IntPoint("Number of References", page.numberOfReferences));
                 for (String subheader : page.subHeaders) {
-                    doc.add(new Field("Subheaders", subheader, TextField.TYPE_STORED));
+                    doc.add(new Field("Subheaders", subheader, TextField.TYPE_NOT_STORED));
                 }
                 for (String category : page.categories) {
-                    doc.add(new Field("Categories", category, TextField.TYPE_STORED));
+                    doc.add(new Field("Categories", category, TextField.TYPE_NOT_STORED));
                 }
                 for (String link : page.links) {
-                    doc.add(new Field("Links", link, TextField.TYPE_STORED));
+                    doc.add(new Field("Links", link, TextField.TYPE_NOT_STORED));
                 }
                 iwriter.addDocument(doc);
             }
