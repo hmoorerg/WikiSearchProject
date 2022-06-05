@@ -20,10 +20,10 @@ public class SearchResource {
         return "This is the main search url, please use a more specific URL for the type of search that you want to make";
     }
 
-    @Path("TopPages/{query}")
+    @Path("TopPages")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getTopPages(@PathParam("query") String query, @QueryParam("count") @DefaultValue("10") int count){
+    public List<String> getTopPages(@QueryParam("query") String query, @QueryParam("count") @DefaultValue("10") int count){
         log.info("Got query : "+query);
         return luceneManager.getTopResults(query, count);
     }

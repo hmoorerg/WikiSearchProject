@@ -108,6 +108,9 @@ public class LuceneManager {
     List<String> getTopResults(String queryString, int limit) {
         var pages = new ArrayList<String>();
 
+        // End early if the query string is empty
+        if (queryString.isEmpty()) return pages;
+
         // Adapt this to search more fields later
         try {
             QueryParser parser = new QueryParser("Title", analyzer);
@@ -123,7 +126,6 @@ public class LuceneManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         return pages;
     }
