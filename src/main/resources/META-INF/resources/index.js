@@ -16,29 +16,45 @@ async function ShowResults(){
     
     // Get the div with the id "results"
     var resultsDiv = document.getElementById("results");
+    var resultsTable = document.getElementById("resultsTable");
 
     resultsDiv.innerHTML = "Loading results from the server...";
     
     results = await search(query);
+
+    resultsDiv.innerHTML = ""; // Done getting results
 
     console.log(results);
     console.log(resultsDiv);
     // Add the results to the div
 
 
-    resultsDiv.innerHTML = "";
+    // Clear the table body of all rowss
+    var tableBody = document.getElementById("tableBody");
+    tableBody.innerHTML = '';
+
+    // Transform the results into table rows
     results.map((result) => {
-        var node = document.createElement("a");
-        node.href = result.page.url;
+        var row = document.createElement("tr");
+        var column1 = document.createElement("td");
+        var column2 = document.createElement("td");
+        row.appendChild(column1);
+        row.appendChild(column2);
 
-        var title = `${result.page.title} - Score : ${result.score}`;
-        node.appendChild(document.createTextNode(title));
+        var link = document.createElement("a");
+        link.href = result.page.url;
+        link.appendChild(document.createTextNode(result.page.title));
+        column1.appendChild(link);
 
-        return node;
-    }).forEach(node => {
-        resultsDiv.appendChild(node);
-        resultsDiv.appendChild(document.createElement("br"));
+        var scoreText = document.createTextNode(result.score);
+        column2.appendChild(scoreText);
+
+        return row;
+    }).forEach(row => {
+        // Append the table rows
+        tableBody.appendChild(row);
     });
+
 
 };
 
