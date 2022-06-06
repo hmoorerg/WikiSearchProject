@@ -8,6 +8,10 @@ h1 {
     text-align: center;
 }
 
+#query {
+    width: 50%;
+}
+
 #searchForm{
     text-align:center;
 }
