@@ -22,10 +22,23 @@ async function ShowResults(){
     results = await search(query);
 
     console.log(results);
+    console.log(resultsDiv);
     // Add the results to the div
-    resultsDiv.innerHTML = results
-        .map((result) => `${result.page.title} - Score : ${result.score}`)
-        .join("<br>");
+
+
+    resultsDiv.innerHTML = "";
+    results.map((result) => {
+        var node = document.createElement("a");
+        node.href = result.page.url;
+
+        var title = `${result.page.title} - Score : ${result.score}`;
+        node.appendChild(document.createTextNode(title));
+
+        return node;
+    }).forEach(node => {
+        resultsDiv.appendChild(node);
+        resultsDiv.appendChild(document.createElement("br"));
+    });
 
 };
 

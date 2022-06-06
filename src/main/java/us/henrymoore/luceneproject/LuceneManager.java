@@ -17,12 +17,17 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.bson.types.ObjectId;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,13 +51,21 @@ public class LuceneManager {
 
     @PostConstruct
     void Initialize() {
-         log.info("Inserting records from MongoDB");
+        log.info("Inserting records from MongoDB");
         var collection = getCollection();
         var pages = collection.find(WikipediaPage.class);
 
         try {
+            var path = Paths.get("./LuceneIndex");
 
-            _directory = new ByteBuffersDirectory();
+            _directory = FSDirectory.open(path);
+
+            // Check if the index already exists
+            if (Files.exists(path)) {
+                log.info("Lucene index already found, skipping initialization");
+                return;
+            }
+
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter iwriter = new IndexWriter(_directory, config);
 

@@ -1,3 +1,6 @@
+# Lucene Index
+LuceneIndex/
+
 #Maven
 target/
 pom.xml.tag
