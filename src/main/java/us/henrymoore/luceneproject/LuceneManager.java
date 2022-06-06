@@ -136,10 +136,13 @@ public class LuceneManager {
 
                 var collection = getCollection();
                 var wikiPage = collection.find(Filters.eq("_id", new ObjectId(document.get("Id"))), WikipediaPage.class).first();
-
+                
+                var snippetBody = collection.find({$text:{$search: wikiPage.bodyText}});
+                    
                 var result = new SearchResult();
                 result.page = wikiPage;
                 result.score = doc.score;
+                result.snippet = snippetBody.partition('\n')[0]; 
                 pages.add(result);
             }
         } catch (Exception e) {
