@@ -29,7 +29,7 @@ public class SearchResource {
         Comparator<SearchResult> compareByScore = new Comparator<SearchResult>() {
             @Override
             public int compare(SearchResult o1, SearchResult o2) {
-                return Float.compare(o1.score,o2.score);
+                return Float.compare(o2.score, o1.score);
             };
         };
 
