@@ -42,6 +42,8 @@ async function ShowResults(){
         row.appendChild(column2);
 
         var link = document.createElement("a");
+        link.target="_blank";
+        link.rel="noopener noreferrer";
         link.href = result.page.url;
         link.appendChild(document.createTextNode(result.page.title));
         column1.appendChild(link);
