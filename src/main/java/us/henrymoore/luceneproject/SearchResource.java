@@ -24,7 +24,7 @@ public class SearchResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<SearchResult> getTopPages(@QueryParam("query") String query, @QueryParam("count") @DefaultValue("10") int count){
-        log.info("Got query : "+query);
+        log.info("Got query : " + query);
 
         Comparator<SearchResult> compareByScore = new Comparator<SearchResult>() {
             @Override
