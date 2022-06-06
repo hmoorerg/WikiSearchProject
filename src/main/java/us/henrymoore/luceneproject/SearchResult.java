@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class SearchResult {
     public WikipediaPage page;
     public float score;
+    public String snippet;
 }
