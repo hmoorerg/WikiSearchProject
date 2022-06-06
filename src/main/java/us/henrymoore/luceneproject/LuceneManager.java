@@ -141,6 +141,7 @@ public class LuceneManager {
                 result.page = wikiPage;
                 result.score = doc.score;
                 result.snippet = wikiPage.bodyText.split("\n", 1)[0];
+                
                 pages.add(result);
             }
         } catch (Exception e) {
