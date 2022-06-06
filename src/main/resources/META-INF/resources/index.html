@@ -4,30 +4,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
     <title>Wikipedia Searcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 <body>
-    <h1>Wikipedia Searcher</h1>
+    <h1 style="padding-top:2em;">Wikipedia Searcher</h1>
+    <br>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <form id="searchForm">
-        <input type="text" id="query" name="query" placeholder="Search Wikipedia" autocomplete="off">
-        <!-- <input type="submit" value="Search"> -->
+        <div class="input-group input-group-lg w-50 p-3" style="margin:auto;">
+            <input type="text" id="query" class="form-control" name="query" placeholder="Search Wikipedia" autocomplete="off">
+            <button class="btn btn-outline-secondary" type="button" id="button-addon">Search</button>
+        </div>
     </form>
+    
+    <br>
 
     <div id="results"></div>
-    <table id="resultsTable">
+    <table class="resultsTable">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Score</th>
+                <th><b>Title</b></th>
+                <th><b>Score</b></th>
+                <th><b>Snippet</b></th>
             </tr>
         </thead>
         <tbody id="tableBody">
             <tr>
+                <td>No results yet</td>
+                <td>No results yet</td>
                 <td>No results yet</td>
             </tr>
         </tbody>
     </table>
 
     <script src="index.js"></script>
+
+    <style>
+        table, th, td {
+            width: 80%;
+            border: 1px solid black;
+            border-color: #96D4D4;
+            border-collapse: collapse;
+        }
+    </style>
 </body>
 </html>

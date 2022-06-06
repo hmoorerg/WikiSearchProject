@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchResult {
-    public WikipediaPage page;
+    public String title;
+    public String url;
     public float score;
     public String snippet;
 }

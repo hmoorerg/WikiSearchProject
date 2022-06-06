@@ -2,10 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Map</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Map Searcher</title>
 </head>
 <body>
-    This will have a map later
+<h1>Wikipedia Searcher</h1>
+<form id="searchForm">
+    <input type="text" id="query" name="query" placeholder="Search Wikipedia" autocomplete="off">
+    <input type="submit" value="Search">
+</form>
 
+<div id="results"></div>
+<table id="resultsTable">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Score</th>
+    </tr>
+    </thead>
+    <tbody id="tableBody">
+    <tr>
+        <td>No results yet</td>
+    </tr>
+    </tbody>
+</table>
+
+<script src="index.js"></script>
+
+<style>
+        table, th, td {
+            width: 80%;
+            border: 1px solid black;
+            border-color: #96D4D4;
+            border-collapse: collapse;
+        }
+    </style>
 </body>
 </html>
