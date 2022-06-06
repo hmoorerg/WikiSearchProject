@@ -2,7 +2,7 @@
 async function search(query) {
     // Make the web request to the server
     request = await fetch('/search/TopPages?query=' + query);
-    
+
     // Process the response as json
     return await request.json();
 };
@@ -13,13 +13,13 @@ var searchForm = document.getElementById("searchForm");
 async function ShowResults(){
     // Get the value of the input field with id "query"
     var query = document.getElementById("query").value;
-    
+
     // Get the div with the id "results"
     var resultsDiv = document.getElementById("results");
     var resultsTable = document.getElementById("resultsTable");
 
     resultsDiv.innerHTML = "Loading results from the server...";
-    
+
     results = await search(query);
 
     resultsDiv.innerHTML = ""; // Done getting results
@@ -44,8 +44,8 @@ async function ShowResults(){
         var link = document.createElement("a");
         link.target="_blank";
         link.rel="noopener noreferrer";
-        link.href = result.url;
-        link.appendChild(document.createTextNode(result.title));
+        link.href = result.page.url;
+        link.appendChild(document.createTextNode(result.page.title));
         column1.appendChild(link);
 
         var scoreText = document.createTextNode(result.score);
@@ -74,10 +74,3 @@ form.addEventListener("submit", async function(event){
 
 // Run an event when the form is modified
 //form.addEventListener("input", ShowResults);
-
-
-// Todo: figure out how to fix pages with multiple urls:
-// First article:
-// https://en.wikipedia.org/wiki/Po_Chih_Leong
-// Slightly different redirect url:
-// https://en.wikipedia.org/wiki/Po-Chih_Leong
