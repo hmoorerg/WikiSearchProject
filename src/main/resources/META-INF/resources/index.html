@@ -9,11 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 <body>
-    <h1>Wikipedia Searcher</h1>
+    <h1 style="padding-top:2em;">Wikipedia Searcher</h1>
     <br>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <form id="searchForm">
-        <div class="input-group input-group-lg">
+        <div class="input-group input-group-lg w-50 p-3" style="margin:auto;">
             <input type="text" id="query" class="form-control" name="query" placeholder="Search Wikipedia" autocomplete="off">
             <button type="btn btn-outline-secondary" class="btn btn-primary">Search</button>
         </div>
@@ -29,7 +29,7 @@
                 <th><b>Score</b></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
             <tr>
                 <td>No results yet</td>
                 <td>No results yet</td>
