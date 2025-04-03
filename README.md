@@ -1,4 +1,4 @@
-# WikiSearchProject
+# Wikipedia Search Project
 
 This is a searh engine for scraped articles from Wikipedia. It makes uses of Lucene to allow for fuzzy searches that are extremely fast.
 
