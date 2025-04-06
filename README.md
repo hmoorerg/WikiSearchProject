@@ -2,7 +2,7 @@
 
 This is a search engine for scraped articles from Wikipedia. It makes uses of Lucene to allow for fuzzy searches that are extremely fast.
 
-Built using the Java Quarkus Framework.
+Built using the Java Quarkus Framework and Lucene (the search library that powers Elasticsearch).
 
 🗂️ Data Source: This project uses data provided by [WikipediaScraper](https://github.com/hmoorerg/WikipediaScraper), which scrapes and structures Wikipedia articles for local indexing and searching.
 
